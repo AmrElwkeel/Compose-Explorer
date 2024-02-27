@@ -42,16 +42,12 @@ import com.tutorials.compose_project.view_model.GymsViewModel
 @Composable
 fun GymsScreen() {
     val vm: GymsViewModel = viewModel()
-
     LazyColumn() {
         items(vm.state) { gym ->
-
             GymItem(gym) { gymId ->
                 vm.toggleFavoriteState(gymId)
-
             }
         }
-
     }
 }
 
@@ -72,17 +68,13 @@ fun GymItem(gym: Gym, onClick: (Int) -> Unit) {
             GymDetails(gym, Modifier.weight(0.85f))
             FavoriteIcon(icon, Modifier.weight(0.15f)) {
                 onClick(gym.id)
-
             }
-
         }
     }
 }
 
 @Composable
 fun FavoriteIcon(icon: ImageVector, modifier: Modifier, onClick: () -> Unit = {}) {
-
-
     Image(
         imageVector = icon,
         contentDescription = "Favorite Gym Icon",
@@ -91,15 +83,11 @@ fun FavoriteIcon(icon: ImageVector, modifier: Modifier, onClick: () -> Unit = {}
             .clickable {
                 onClick()
             }
-
     )
-
-
 }
 
 @Composable
 fun GymIcon(vector: ImageVector, modifier: Modifier) {
-
     Image(
         imageVector = vector,
         contentDescription = "Gym Icon",
@@ -107,11 +95,8 @@ fun GymIcon(vector: ImageVector, modifier: Modifier) {
         colorFilter = ColorFilter.tint(
             Color.Gray
         )
-
-
     )
 }
-
 
 @Composable
 fun GymDetails(gym: Gym, modifier: Modifier) {
@@ -123,18 +108,12 @@ fun GymDetails(gym: Gym, modifier: Modifier) {
                 style = TextStyle(fontSize = 10.sp)
             )
         }
-
     }
-
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun GymScreenPreview() {
-
-
     GymsScreen()
-
-
 }
