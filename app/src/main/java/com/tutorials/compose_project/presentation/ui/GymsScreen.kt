@@ -1,5 +1,3 @@
-package com.tutorials.compose_project.presentation.ui
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -23,6 +21,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,44 +41,56 @@ import com.tutorials.compose_project.view_model.GymsViewModel
 
 @Composable
 fun GymsScreen() {
-    val vm:GymsViewModel = viewModel()
+    val vm: GymsViewModel = viewModel()
+
     LazyColumn() {
-      items(vm.getGyms()){ gym ->
-            GymItem(gym)
+        items(vm.state) { gym ->
+
+            GymItem(gym) { gymId ->
+                vm.toggleFavoriteState(gymId)
+
+            }
         }
-    }
 
-}
-
-@Composable
-fun GymItem(gym:Gym) {
-    Card(modifier = Modifier
-        .padding(8.dp)
-        .height(51.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            GymIcon(Icons.Filled.Place, Modifier.weight(0.15f))
-            GymDetails(gym,Modifier.weight(0.85f))
-            FavoriteIcon(Modifier.weight(0.15f))
-
-        }
     }
 }
 
 @Composable
-fun FavoriteIcon(modifier: Modifier) {
-    var isFavouriteState by remember{ mutableStateOf(false) }
-    val isChangeIcon = if(isFavouriteState){
+fun GymItem(gym: Gym, onClick: (Int) -> Unit) {
+    val icon = if (gym.isFavorite) {
         Icons.Filled.Favorite
-    }else{
+    } else {
         Icons.Filled.FavoriteBorder
     }
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .height(51.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            GymIcon(Icons.Filled.Place, Modifier.weight(0.15f))
+            GymDetails(gym, Modifier.weight(0.85f))
+            FavoriteIcon(icon, Modifier.weight(0.15f)) {
+                onClick(gym.id)
+
+            }
+
+        }
+    }
+}
+
+@Composable
+fun FavoriteIcon(icon: ImageVector, modifier: Modifier, onClick: () -> Unit = {}) {
+
 
     Image(
-        imageVector = isChangeIcon,
-        contentDescription ="Favorite Gym Icon",
-        modifier = Modifier.padding(8.dp).clickable {
-            isFavouriteState = !isFavouriteState
-        }
+        imageVector = icon,
+        contentDescription = "Favorite Gym Icon",
+        modifier = modifier
+            .padding(8.dp)
+            .clickable {
+                onClick()
+            }
 
     )
 
@@ -104,7 +115,7 @@ fun GymIcon(vector: ImageVector, modifier: Modifier) {
 
 @Composable
 fun GymDetails(gym: Gym, modifier: Modifier) {
-    Column(modifier=modifier) {
+    Column(modifier = modifier) {
         Text(text = gym.name, style = TextStyle(fontSize = 20.sp, color = Color.Blue))
         CompositionLocalProvider(value = LocalContentColor provides Color.DarkGray) {
             Text(
@@ -122,8 +133,8 @@ fun GymDetails(gym: Gym, modifier: Modifier) {
 @Composable
 fun GymScreenPreview() {
 
-//    Compose_ProjectTheme{
-        GymsScreen()
-//    }
+
+    GymsScreen()
+
 
 }

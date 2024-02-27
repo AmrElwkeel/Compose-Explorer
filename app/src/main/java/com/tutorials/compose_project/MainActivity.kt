@@ -1,5 +1,6 @@
 package com.tutorials.compose_explorer
 
+import GymsScreen
 import android.os.Bundle
 
 import androidx.activity.ComponentActivity
@@ -31,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tutorials.compose_explorer.presentation.theme.Compose_ProjectTheme
-import com.tutorials.compose_project.presentation.ui.GymsScreen
+
 
 
 class MainActivity : ComponentActivity() {
