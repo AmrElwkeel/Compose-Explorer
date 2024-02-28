@@ -7,13 +7,44 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.tutorials.compose_project.data.Gym
-import com.tutorials.compose_project.data.ListOfGyms
+import com.tutorials.compose_project.domain.GymsApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class GymsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
-    var state by mutableStateOf(restoreSelectedGyms())
 
-    private fun getGyms() = ListOfGyms
+    private var apiService:GymsApiService
+
+    init {
+        val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(
+            GsonConverterFactory.create()
+        ).baseUrl("https://cairogyms-e1e9a-default-rtdb.firebaseio.com/").build()
+
+         apiService = retrofit.create(GymsApiService::class.java)
+        getGyms()
+    }
+
+    var state by mutableStateOf(emptyList<Gym>())
+
+    private fun getGyms() {
+        apiService.getGyms().enqueue(object: Callback<List<Gym>> {
+            override fun onResponse(call: Call<List<Gym>>, response: Response<List<Gym>>) {
+                response.body()?.let {
+                    state = it.restoreSelectedGyms()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Gym>>, t: Throwable) {
+                      t.printStackTrace()
+            }
+        })
+
+    }
 
     fun toggleFavoriteState(gymId: Int) {
         val gyms = state.toMutableList()
@@ -32,15 +63,15 @@ class GymsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
     }
 
-    private  fun restoreSelectedGyms():List<Gym>{
+    private  fun List<Gym>.restoreSelectedGyms():List<Gym>{
 
-        val gyms = getGyms()
+//        val gyms =this
         stateHandle.get<List<Int>?>(FAV_IDS)?.let {savedIDs ->
            savedIDs.forEach{gymId ->
-           gyms.find { it.id == gymId }?.isFavorite == true
+           this.find { it.id == gymId }?.isFavorite == true
            }
         }
-        return gyms
+        return this
     }
 
     companion object {

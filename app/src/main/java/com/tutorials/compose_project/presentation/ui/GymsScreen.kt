@@ -18,6 +18,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -33,15 +34,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tutorials.compose_explorer.presentation.theme.Compose_ProjectTheme
+
 import com.tutorials.compose_project.data.Gym
-import com.tutorials.compose_project.data.ListOfGyms
+
 import com.tutorials.compose_project.view_model.GymsViewModel
 
 
 @Composable
 fun GymsScreen() {
     val vm: GymsViewModel = viewModel()
+
+
     LazyColumn() {
         items(vm.state) { gym ->
             GymItem(gym) { gymId ->
