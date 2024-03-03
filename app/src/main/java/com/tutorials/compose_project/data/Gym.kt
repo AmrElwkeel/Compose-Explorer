@@ -11,4 +11,6 @@ data class Gym(
     val name: String,
     @SerializedName("gym_location")
     val place: String,
+    @SerializedName("is_open")
+    var isOpen: Boolean,
     var isFavorite: Boolean = false)

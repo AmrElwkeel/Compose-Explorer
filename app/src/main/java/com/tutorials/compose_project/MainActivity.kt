@@ -5,146 +5,156 @@ import android.os.Bundle
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.tutorials.compose_explorer.presentation.theme.Compose_ProjectTheme
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.tutorials.compose_explorer.presentation.theme.Compose_ProjectTheme
+import com.tutorials.compose_project.presentation.ui.GymDetailsScreen
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var score by remember { mutableStateOf(0) }
+//            var score by remember { mutableStateOf(0) }
             /*       ScoreSection(score = score,
                 countCallback = { score += 2 }
             )*/
 
             Compose_ProjectTheme{
-                GymsScreen()
+//                GymDetailsScreen()
+//                GymsScreen()
+                GymsAroundApp()
             }
 //            MyLayout()
-
+//            GymDetailsScreen()
         }
     }
 }
 
-
-@Preview
 @Composable
-fun MyBox() {
-    Box(
-        modifier = Modifier
-            .size(120.dp)
-            .background(Color.Black)
-            .padding(10.dp)
-            .clip(RoundedCornerShape(size = 10.dp))
-            .background(Color.Gray)
-    ) {
-        Text(text = "Hello", Modifier.align(Alignment.TopCenter), color = Color.White)
-        Text(text = "Android", Modifier.align(Alignment.Center), color = Color.White)
-        Text(text = "Developers", Modifier.align(Alignment.BottomCenter), color = Color.White)
-    }
+private fun GymsAroundApp(){
+    val navController = rememberNavController()
 
-}
+    NavHost(navController = navController, startDestination = "gyms"){
 
-@Preview
-@Composable
-fun MyLayout() {
+        composable(route="gyms"){
+            GymsScreen{id->
+                navController.navigate("gyms/$id")
 
-    Column {
-        MyText()
-        MyTexButton()
-        Row {
-            Text(text = "Logo")
-            MyImage()
-
+            }
         }
-    }
-}
+        composable(route="gyms/{gym_id}" , arguments = listOf(navArgument("gym_id"){
+          type = NavType.IntType
+        })){
 
-
-@Composable
-fun MyText() {
-    Text(
-        text = "Elephant Can sens Storms",
-        style = androidx.compose.ui.text.TextStyle(
-            color = Color.Green,
-            fontSize = 20.sp
-        )
-    )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun MyTexButton() {
-    var buttonIsEnable by remember { mutableStateOf(true) }
-    Button(
-        onClick = { buttonIsEnable = false },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.DarkGray,
-            contentColor = Color.Red,
-            disabledContainerColor = Color.Gray
-
-        ),
-        enabled = buttonIsEnable
-    ) {
-        Text(
-            text = if (buttonIsEnable) "Click Me" else "Elephant Button",
-            style = androidx.compose.ui.text.TextStyle(
-                color = Color.Green,
-                fontSize = 20.sp
-            )
-        )
+            GymDetailsScreen()
+        }
 
     }
+
 }
 
 
-@Composable
-fun MyTextField() {
-    var emailAddress by remember {
-        mutableStateOf("")
-    }
-    TextField(value = emailAddress, onValueChange = {
-        emailAddress = it
-    },
-        label = { Text(text = "Email Address") })
-}
 
-
-@Composable
-fun MyImage() {
-    Image(
-        painter = painterResource(id = R.drawable.jetpack_compose),
-        contentDescription = "Jetpack Compose Logo"
-    )
-}
+//
+//@Preview
+//@Composable
+//fun MyBox() {
+//    Box(
+//        modifier = Modifier
+//            .size(120.dp)
+//            .background(Color.Black)
+//            .padding(10.dp)
+//            .clip(RoundedCornerShape(size = 10.dp))
+//            .background(Color.Gray)
+//    ) {
+//        Text(text = "Hello", Modifier.align(Alignment.TopCenter), color = Color.White)
+//        Text(text = "Android", Modifier.align(Alignment.Center), color = Color.White)
+//        Text(text = "Developers", Modifier.align(Alignment.BottomCenter), color = Color.White)
+//    }
+//
+//}
+//
+//@Preview
+//@Composable
+//fun MyLayout() {
+//
+//    Column {
+//        MyText()
+//        MyTexButton()
+//        Row {
+//            Text(text = "Logo")
+//            MyImage()
+//
+//        }
+//    }
+//}
+//
+//
+//@Composable
+//fun MyText() {
+//    Text(
+//        text = "Elephant Can sens Storms",
+//        style = androidx.compose.ui.text.TextStyle(
+//            color = Color.Green,
+//            fontSize = 20.sp
+//        )
+//    )
+//}
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun MyTexButton() {
+//    var buttonIsEnable by remember { mutableStateOf(true) }
+//    Button(
+//        onClick = { buttonIsEnable = false },
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color.DarkGray,
+//            contentColor = Color.Red,
+//            disabledContainerColor = Color.Gray
+//
+//        ),
+//        enabled = buttonIsEnable
+//    ) {
+//        Text(
+//            text = if (buttonIsEnable) "Click Me" else "Elephant Button",
+//            style = androidx.compose.ui.text.TextStyle(
+//                color = Color.Green,
+//                fontSize = 20.sp
+//            )
+//        )
+//
+//    }
+//}
+//
+//
+//@Composable
+//fun MyTextField() {
+//    var emailAddress by remember {
+//        mutableStateOf("")
+//    }
+//    TextField(value = emailAddress, onValueChange = {
+//        emailAddress = it
+//    },
+//        label = { Text(text = "Email Address") })
+//}
+//
+//
+//@Composable
+//fun MyImage() {
+//    Image(
+//        painter = painterResource(id = R.drawable.jetpack_compose),
+//        contentDescription = "Jetpack Compose Logo"
+//    )
+//}
 
 
 /// Clean Architecture principles

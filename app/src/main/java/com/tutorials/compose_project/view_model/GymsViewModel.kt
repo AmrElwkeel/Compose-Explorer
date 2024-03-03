@@ -6,8 +6,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tutorials.compose_project.data.Gym
 import com.tutorials.compose_project.domain.GymsApiService
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,31 +25,32 @@ import retrofit2.converter.gson.GsonConverterFactory
 class GymsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
 
-    private var apiService:GymsApiService
+    private var apiService: GymsApiService
 
+
+    private  val errorHandler = CoroutineExceptionHandler{ _, throwable ->
+
+
+        throwable.printStackTrace() }
     init {
         val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(
             GsonConverterFactory.create()
         ).baseUrl("https://cairogyms-e1e9a-default-rtdb.firebaseio.com/").build()
 
-         apiService = retrofit.create(GymsApiService::class.java)
+        apiService = retrofit.create(GymsApiService::class.java)
         getGyms()
     }
 
     var state by mutableStateOf(emptyList<Gym>())
 
     private fun getGyms() {
-        apiService.getGyms().enqueue(object: Callback<List<Gym>> {
-            override fun onResponse(call: Call<List<Gym>>, response: Response<List<Gym>>) {
-                response.body()?.let {
-                    state = it.restoreSelectedGyms()
+        viewModelScope.launch(Dispatchers.IO + errorHandler) {
+                val gyms = apiService.getGyms()
+                withContext(Dispatchers.Main) {
+                    state = gyms.restoreSelectedGyms()
                 }
-            }
+        }
 
-            override fun onFailure(call: Call<List<Gym>>, t: Throwable) {
-                      t.printStackTrace()
-            }
-        })
 
     }
 
@@ -63,13 +71,14 @@ class GymsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
     }
 
-    private  fun List<Gym>.restoreSelectedGyms():List<Gym>{
+
+    private fun List<Gym>.restoreSelectedGyms(): List<Gym> {
 
 //        val gyms =this
-        stateHandle.get<List<Int>?>(FAV_IDS)?.let {savedIDs ->
-           savedIDs.forEach{gymId ->
-           this.find { it.id == gymId }?.isFavorite == true
-           }
+        stateHandle.get<List<Int>?>(FAV_IDS)?.let { savedIDs ->
+            savedIDs.forEach { gymId ->
+                this.find { it.id == gymId }?.isFavorite == true
+            }
         }
         return this
     }
